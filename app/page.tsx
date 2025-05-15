@@ -1,103 +1,60 @@
-import Image from "next/image";
+import { HeaderSection } from "@/sections/header-section";
+import { HeroGeometric } from "@/sections/hero-section";
+import { TestimonialsSection } from "@/sections/testimonials-section";
+import { FeatureSection } from "@/sections/feauture-section";
+import { CheckCircle, TrendingUp } from "lucide-react";
+import { Globe, Video } from "lucide-react";
+
 
 export default function Home() {
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+    <div>
+      <HeaderSection />
+      <HeroGeometric />
+      <TestimonialsSection testimonials={[
+        {
+          name: "이준호",
+          role: "CEO",
+          text: "제품의 기능만 나열하는 기존 방식에서 벗어나, 브랜드의 철학과 무드를 정확히 담아낸 결과물이 나왔습니다. 론칭 이후 실제로 투자자 미팅 때도 이 랜딩을 가장 먼저 보여줄 정도예요. 단순한 외주라기보단, 내부 팀처럼 함께 고민해준 점이 가장 인상 깊었습니다.",
+          avatar: "",
+          rating: 5,
+        },
+        {
+          name: "이률",
+          role: "CEO",
+          text: "브랜드 특유의 고요한 감도와 메시지를 해치지 않으면서도, 직관적인 흐름과 구조를 제안해 주셨어요. 덕분에 고객 문의 전환율도 확연히 늘었고, 내부에서도 '우리가 찾던 감성'이라는 말이 나왔습니다. 본질을 이해하고 표현해줄 수 있는 드문 팀이었습니다.",
+          avatar: "",
+          rating: 5,
+        },
+      ]} />
+      <FeatureSection items={[
+        {
+          title: "전문직 맞춤형 랜딩페이지",
+          description: "변호사, 의사, 회계사 등 전문직을 위한 신뢰도 높은 맞춤형 랜딩페이지를 제작하여 고객 유치를 극대화하세요.",
+          icon: <TrendingUp className="w-4 h-4 text-blue-500" />,
+          tags: ["전문직", "고객유치", "신뢰도"],
+        },
+        {
+          title: "매출 증대 커머스 랜딩페이지",
+          description: "상품의 매력을 극대화하고 구매 전환율을 높이는 커머스 특화 랜딩페이지로 온라인 비즈니스 성장을 경험하세요.",
+          icon: <CheckCircle className="w-4 h-4 text-emerald-500" />,
+          tags: ["커머스", "매출증대", "전환율최적화"],
+          colSpan: 2,
+        },
+        {
+          title: "SaaS 솔루션 소개 랜딩페이지",
+          description: "복잡한 SaaS 솔루션의 가치를 명확하게 전달하고 잠재 고객을 실제 사용자로 전환하는 효과적인 랜딩페이지를 구축합니다.",
+          icon: <Globe className="w-4 h-4 text-sky-500" />,
+          tags: ["SaaS", "솔루션소개", "사용자전환"],
+          colSpan: 2,
+        },
+        {
+          title: "신뢰를 주는 병원/의원 랜딩페이지",
+          description: "환자들에게 신뢰감을 주는 영상 콘텐츠와 함께 병원/의원의 전문성을 효과적으로 알리는 랜딩페이지를 통해 더 많은 방문을 유도합니다.",
+          icon: <Video className="w-4 h-4 text-purple-500" />,
+          tags: ["병원", "의원", "환자유치", "전문성"],
+        },
+      ]} />
     </div>
   );
 }
