@@ -66,7 +66,7 @@ const itemsSample: BentoItem[] = [
 
 function BentoGrid({ items = itemsSample }: BentoGridProps) {
     return (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 p-4 max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-3 py-12 max-w-7xl mx-auto">
             {items.map((item, index) => (
                 <div
                     key={index}

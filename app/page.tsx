@@ -4,9 +4,80 @@ import { TestimonialsSection } from "@/sections/testimonials-section";
 import { FeatureSection } from "@/sections/feauture-section";
 import { CheckCircle, TrendingUp } from "lucide-react";
 import { Globe, Video } from "lucide-react";
+import { ProjectSection } from "@/sections/project-section";
+import type { CardGrid } from "@/components/ui/card-grid";
+import React from "react";
+import { createClient } from '@/utils/supabase/server';
+import { Footer } from "@/sections/footer-section";
 
+const DummyContent = () => {
+  return (
+    <>
+      {[...new Array(3).fill(1)].map((_, index) => {
+        return (
+          <div
+            key={"dummy-content" + index}
+            className="bg-[#F5F5F7] dark:bg-neutral-800 p-8 md:p-14 rounded-3xl mb-4"
+          >
+            <p className="text-neutral-600 dark:text-neutral-400 text-base md:text-2xl font-sans max-w-3xl mx-auto">
+              <span className="font-bold text-neutral-700 dark:text-neutral-200">
+                The first rule of Apple club is that you boast about Apple club.
+              </span>{" "}
+              Keep a journal, quickly jot down a grocery list, and take amazing
+              class notes. Want to convert those notes to text? No problem.
+              Langotiya jeetu ka mara hua yaar is ready to capture every
+              thought.
+            </p>
+            <img
+              src="https://assets.aceternity.com/macbook.png"
+              alt="Macbook mockup from Aceternity UI"
+              height="500"
+              width="500"
+              className="md:w-1/2 md:h-1/2 h-full w-full mx-auto object-contain"
+            />
+          </div>
+        );
+      })}
+    </>
+  );
+};
 
-export default function Home() {
+async function fetchProjectData(): Promise<CardGrid[]> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from('projects')
+    .select('thumbnail, service_name, contents, type')
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    console.error('Error fetching project data from Supabase:', error);
+    return [
+      {
+        category: "Error",
+        title: "Failed to load projects",
+        src: "https://images.unsplash.com/photo-1593508512255-86ab42a8e620?q=80&w=3556&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        content: <p>Could not fetch project data: {error.message}</p>,
+        type: "app",
+      },
+    ];
+  }
+
+  if (!data) {
+    return [];
+  }
+
+  return data.map((item: any) => ({
+    src: item.thumbnail,
+    title: item.service_name,
+    category: "Project Category",
+    content: <p>{item.contents}</p>,
+    type: item.type as 'app' | 'web' | undefined,
+  }));
+}
+
+export default async function Home() {
+  const projectItems = await fetchProjectData();
+
   return (
     <div>
       <HeaderSection />
@@ -33,6 +104,7 @@ export default function Home() {
           description: "변호사, 의사, 회계사 등 전문직을 위한 신뢰도 높은 맞춤형 랜딩페이지를 제작하여 고객 유치를 극대화하세요.",
           icon: <TrendingUp className="w-4 h-4 text-blue-500" />,
           tags: ["전문직", "고객유치", "신뢰도"],
+          colSpan: 2,
         },
         {
           title: "매출 증대 커머스 랜딩페이지",
@@ -53,8 +125,11 @@ export default function Home() {
           description: "환자들에게 신뢰감을 주는 영상 콘텐츠와 함께 병원/의원의 전문성을 효과적으로 알리는 랜딩페이지를 통해 더 많은 방문을 유도합니다.",
           icon: <Video className="w-4 h-4 text-purple-500" />,
           tags: ["병원", "의원", "환자유치", "전문성"],
+          colSpan: 2
         },
       ]} />
+      <ProjectSection items={projectItems} />
+      <Footer />
     </div>
   );
 }

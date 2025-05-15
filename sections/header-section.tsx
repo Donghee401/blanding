@@ -10,7 +10,7 @@ import {
 export function HeaderSection() {
   const navItems = [
     {
-      name: "Features",
+      name: "회사 소개",
       link: "#features",
     },
     {
