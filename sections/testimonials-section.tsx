@@ -4,7 +4,7 @@ import { GridBackground } from "@/components/ui/grid-background";
 
 export interface Testimonial {
   name: string;
-  role: string;
+  category: string;
   text: string;
   avatar?: string;
   rating?: number;
@@ -77,7 +77,7 @@ export function TestimonialsSection({
                     )}
                     <div>
                       <p className="text-sm font-medium">{t.name}</p>
-                      <p className="text-xs text-muted-foreground">{t.role}</p>
+                      <p className="text-xs text-muted-foreground">{t.category}</p>
                     </div>
                   </div>
                 </CardFooter>

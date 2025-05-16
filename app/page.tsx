@@ -2,102 +2,137 @@ import { HeaderSection } from "@/sections/header-section";
 import { HeroGeometric } from "@/sections/hero-section";
 import { TestimonialsSection } from "@/sections/testimonials-section";
 import { FeatureSection } from "@/sections/feauture-section";
-import { CheckCircle, TrendingUp } from "lucide-react";
-import { Globe, Video } from "lucide-react";
+import { CheckCircle, TrendingUp, Globe, Video } from "lucide-react";
 import { ProjectSection } from "@/sections/project-section";
-import type { CardGrid } from "@/components/ui/card-grid";
+import type { CardGrid } from "@/components/card-grid";
 import React from "react";
-import { createClient } from '@/utils/supabase/server';
+import { createClient } from '@/app/utils/supabase/server';
 import { Footer } from "@/sections/footer-section";
+import { ContactSection } from "@/sections/contact-section";
+import { ContactFormData } from "@/components/contact-form";
 
-const DummyContent = () => {
-  return (
-    <>
-      {[...new Array(3).fill(1)].map((_, index) => {
-        return (
-          <div
-            key={"dummy-content" + index}
-            className="bg-[#F5F5F7] dark:bg-neutral-800 p-8 md:p-14 rounded-3xl mb-4"
-          >
-            <p className="text-neutral-600 dark:text-neutral-400 text-base md:text-2xl font-sans max-w-3xl mx-auto">
-              <span className="font-bold text-neutral-700 dark:text-neutral-200">
-                The first rule of Apple club is that you boast about Apple club.
-              </span>{" "}
-              Keep a journal, quickly jot down a grocery list, and take amazing
-              class notes. Want to convert those notes to text? No problem.
-              Langotiya jeetu ka mara hua yaar is ready to capture every
-              thought.
-            </p>
-            <img
-              src="https://assets.aceternity.com/macbook.png"
-              alt="Macbook mockup from Aceternity UI"
-              height="500"
-              width="500"
-              className="md:w-1/2 md:h-1/2 h-full w-full mx-auto object-contain"
-            />
-          </div>
-        );
-      })}
-    </>
-  );
-};
+// 추천서 데이터 타입 정의
+interface TestimonialItem {
+  name: string;
+  category: string;
+  text: string;
+  avatar: string;
+  rating: number;
+}
 
-async function fetchProjectData(): Promise<CardGrid[]> {
+// 통합된 데이터 패칭 함수
+async function fetchPageData() {
   const supabase = await createClient();
-  const { data, error } = await supabase
-    .from('projects')
-    .select('thumbnail, service_name, contents, type')
-    .order('created_at', { ascending: false });
-
-  if (error) {
-    console.error('Error fetching project data from Supabase:', error);
-    return [
-      {
-        category: "Error",
-        title: "Failed to load projects",
-        src: "https://images.unsplash.com/photo-1593508512255-86ab42a8e620?q=80&w=3556&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-        content: <p>Could not fetch project data: {error.message}</p>,
-        type: "app",
-      },
-    ];
+  
+  // 모든 패칭을 병렬로 실행
+  const [projectsResult, testimonialsResult] = await Promise.all([
+    // 프로젝트 데이터 패칭
+    supabase
+      .from('projects')
+      .select('thumbnail, service_name, contents, type')
+      .order('created_at', { ascending: false }),
+    
+    // 리뷰 데이터 패칭
+    supabase
+      .from('testimonials')
+      .select(`
+        contents,
+        client,
+        clients:client (
+          name,
+          company,
+          logo
+        )
+      `)
+      .order('created_at', { ascending: false })
+  ]);
+  
+  // 프로젝트 데이터 가공
+  let projectItems: CardGrid[] = [];
+  if (projectsResult.error) {
+    console.error('Error fetching project data:', projectsResult.error);
+    projectItems = [{
+      category: "Error",
+      title: "데이터 로드 실패",
+      src: "https://images.unsplash.com/photo-1593508512255-86ab42a8e620?q=80&w=3556&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      content: `프로젝트 데이터를 가져오지 못했습니다: ${projectsResult.error.message}`,
+      type: "app",
+    }];
+  } else if (projectsResult.data) {
+    projectItems = projectsResult.data.map((item: any) => ({
+      src: item.thumbnail,
+      title: item.service_name,
+      category: "Project Category",
+      content: item.contents as string,
+      type: item.type as 'app' | 'web' | undefined,
+    }));
   }
+  
 
-  if (!data) {
-    return [];
+  let testimonials: TestimonialItem[] = [];
+  if (testimonialsResult.error) {
+    console.error('Error fetching testimonial data:', testimonialsResult.error);
+    testimonials = [{
+      name: "Error",
+      category: "Error",
+      text: `리뷰 데이터를 가져오지 못했습니다: ${testimonialsResult.error.message}`,
+      avatar: "",
+      rating: 5,
+    }];
+  } else if (testimonialsResult.data) {
+    testimonials = testimonialsResult.data.map((item: any) => ({
+      name: item.clients?.name || "Unknown",
+      category: item.clients?.company || "Unknown",
+      text: item.contents,
+      avatar: item.clients?.logo || "",
+      rating: 5,
+    }));
   }
+  
+  return {
+    projectItems,
+    testimonials
+  };
+}
 
-  return data.map((item: any) => ({
-    src: item.thumbnail,
-    title: item.service_name,
-    category: "Project Category",
-    content: <p>{item.contents}</p>,
-    type: item.type as 'app' | 'web' | undefined,
-  }));
+// 서버 액션 정의
+export async function submitContactForm(formData: ContactFormData) {
+  try {
+    const supabase = await createClient();
+    
+    // DB 구조에 맞는 필드만 포함
+    const { error } = await supabase
+      .from('clients')
+      .insert({
+        name: formData.name,
+        company: formData.company,
+        category: formData.category || null,
+        email: formData.email,
+        message: formData.message,
+        created_at: new Date().toISOString(),
+      });
+
+    if (error) {
+      console.error('Error inserting client data:', error);
+      throw new Error(`Failed to submit contact form: ${error.message}`);
+    }
+    
+    return { success: true };
+  } catch (error: any) {
+    console.error('서버 액션 에러:', error);
+    return { success: false, error: error.message };
+  }
 }
 
 export default async function Home() {
-  const projectItems = await fetchProjectData();
+  // 하나의 함수로 모든 데이터 패칭
+  const { projectItems, testimonials } = await fetchPageData();
 
   return (
     <div>
       <HeaderSection />
       <HeroGeometric />
-      <TestimonialsSection testimonials={[
-        {
-          name: "이준호",
-          role: "CEO",
-          text: "제품의 기능만 나열하는 기존 방식에서 벗어나, 브랜드의 철학과 무드를 정확히 담아낸 결과물이 나왔습니다. 론칭 이후 실제로 투자자 미팅 때도 이 랜딩을 가장 먼저 보여줄 정도예요. 단순한 외주라기보단, 내부 팀처럼 함께 고민해준 점이 가장 인상 깊었습니다.",
-          avatar: "",
-          rating: 5,
-        },
-        {
-          name: "이률",
-          role: "CEO",
-          text: "브랜드 특유의 고요한 감도와 메시지를 해치지 않으면서도, 직관적인 흐름과 구조를 제안해 주셨어요. 덕분에 고객 문의 전환율도 확연히 늘었고, 내부에서도 '우리가 찾던 감성'이라는 말이 나왔습니다. 본질을 이해하고 표현해줄 수 있는 드문 팀이었습니다.",
-          avatar: "",
-          rating: 5,
-        },
-      ]} />
+      <TestimonialsSection testimonials={testimonials} />
       <FeatureSection items={[
         {
           title: "전문직 맞춤형 랜딩페이지",
@@ -129,6 +164,7 @@ export default async function Home() {
         },
       ]} />
       <ProjectSection items={projectItems} />
+      <ContactSection />
       <Footer />
     </div>
   );

@@ -1,4 +1,4 @@
-import { BentoGrid } from "@/components/ui/bento-grid";
+import { BentoGrid } from "@/components/bento-grid";
 import {
     CheckCircle,
     Clock,
@@ -39,7 +39,7 @@ export function FeatureSection({
 }: FeatureSectionProps) {
   return (
     <section className="w-full py-16" id={id}>
-        <div className="container mx-auto px-4 md:px-6 max-w-7xl">
+        <div className="container max-w-7xl mx-auto px-4 md:px-6">
          <div className="flex flex-col items-center justify-center space-y-4 text-center">
           <div className="space-y-2">
             <div className="inline-block rounded-lg bg-primary px-3 py-1 text-sm text-primary-foreground/80">
@@ -48,7 +48,7 @@ export function FeatureSection({
             <h2 className="text-3xl font-bold tracking-tighter bg-clip-text text-transparent bg-gradient-to-b from-foreground to-foreground/80 md:text-5xl/tight">
               {title}
             </h2>
-            <p className="max-w-[900px] text-muted-foreground md:text-3xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
+            <p className="max-w-3xl text-muted-foreground text-lg md:text-xl/relaxed">
               {subtitle}
             </p>
           </div>

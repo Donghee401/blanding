@@ -140,7 +140,10 @@ export const Card = ({
               >
                 {card.title}
               </motion.p>
-              <div className="py-10">{card.content}</div>
+              <div 
+                className="py-10"
+                dangerouslySetInnerHTML={{ __html: card.content as string }} 
+              />
             </motion.div>
           </div>
         )}
