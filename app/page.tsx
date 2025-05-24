@@ -10,7 +10,8 @@ import { createClient } from '@/app/utils/supabase/server';
 import { Footer } from "@/sections/footer-section";
 import { ContactSection } from "@/sections/contact-section";
 import { ContactFormData } from "@/components/contact-form";
-
+import { PortfolioSection } from "@/sections/portfolio-section";
+import NewSection from "@/sections/new";
 // 추천서 데이터 타입 정의
 interface TestimonialItem {
   name: string;
@@ -163,7 +164,8 @@ export default async function Home() {
           colSpan: 2
         },
       ]} />
-      <ProjectSection items={projectItems} />
+      {/* <ProjectSection items={projectItems} /> */}
+      <PortfolioSection />
       <ContactSection />
       <Footer />
     </div>
